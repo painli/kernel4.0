@@ -87,12 +87,13 @@ static void __init __free_pages_memory(unsigned long start, unsigned long end)
 	int order;
 
 	while (start < end) {
-		order = min(MAX_ORDER - 1UL, __ffs(start));
-
+		order = min(MAX_ORDER - 1UL, __ffs(start));/*__ffs(start)计算页帧bit位 第几位为1，该值为order*/
+        pprintk("_ffs(start)=0x%x, start=0x%x, order=%d\n",
+                        __ffs(start),start,order);
 		while (start + (1UL << order) > end)
 			order--;
 
-		__free_pages_bootmem(pfn_to_page(start), order);
+		__free_pages_bootmem(pfn_to_page(start), order);/*将内存以2的order次方释放给伙伴系统*/
 
 		start += (1UL << order);
 	}

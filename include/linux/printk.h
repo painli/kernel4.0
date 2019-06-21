@@ -233,6 +233,10 @@ extern asmlinkage void dump_stack(void) __cold;
 #ifndef pr_fmt
 #define pr_fmt(fmt) fmt
 #endif
+/*add pain printk*/
+
+#define pprintk(fmt,args...)  \
+        printk(KERN_ERR "pain debug:%s: " fmt,__func__,##args)
 
 /*
  * These can be used to print at the various log levels.

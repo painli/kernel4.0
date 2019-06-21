@@ -1077,7 +1077,8 @@ void __init sanity_check_meminfo(void)
 		phys_addr_t block_start = reg->base;
 		phys_addr_t block_end = reg->base + reg->size;
 		phys_addr_t size_limit = reg->size;
-
+        pprintk("block start=0x%x, block end=0x%x, size_limit=0x%x\n",
+                        block_start,block_end,size_limit);
 		if (reg->base >= vmalloc_limit)
 			highmem = 1;
 		else
@@ -1145,7 +1146,9 @@ void __init sanity_check_meminfo(void)
 		memblock_limit = round_down(memblock_limit, SECTION_SIZE);
 	if (!memblock_limit)
 		memblock_limit = arm_lowmem_limit;
-
+    
+    pprintk("arm_lowmem_limit=0x%x, vmalloc_min=0x%x, vmalloc_limit=0x%x\n",
+                    arm_lowmem_limit,vmalloc_min,vmalloc_limit);
 	memblock_set_current_limit(memblock_limit);
 }
 
@@ -1331,7 +1334,8 @@ static void __init map_lowmem(void)
 	struct memblock_region *reg;
 	phys_addr_t kernel_x_start = round_down(__pa(_stext), SECTION_SIZE);
 	phys_addr_t kernel_x_end = round_up(__pa(__init_end), SECTION_SIZE);
-
+    pprintk("kernel_x_start=0x%x, kernel_x_end=0x%x\n",
+                    kernel_x_start,kernel_x_end);
 	/* Map all the lowmem memory banks. */
 	for_each_memblock(memory, reg) {
 		phys_addr_t start = reg->base;
@@ -1342,20 +1346,22 @@ static void __init map_lowmem(void)
 			end = arm_lowmem_limit;
 		if (start >= end)
 			break;
+        pprintk("start=0x%x, end=0x%x\n",
+                        start,end);
 
 		if (end < kernel_x_start) {
 			map.pfn = __phys_to_pfn(start);
 			map.virtual = __phys_to_virt(start);
 			map.length = end - start;
 			map.type = MT_MEMORY_RWX;
-
+            pprintk("end < kernel_x_start\n");
 			create_mapping(&map);
 		} else if (start >= kernel_x_end) {
 			map.pfn = __phys_to_pfn(start);
 			map.virtual = __phys_to_virt(start);
 			map.length = end - start;
 			map.type = MT_MEMORY_RW;
-
+            pprintk("start >= kernel_x_end\n");
 			create_mapping(&map);
 		} else {
 			/* This better cover the entire kernel */
@@ -1364,7 +1370,7 @@ static void __init map_lowmem(void)
 				map.virtual = __phys_to_virt(start);
 				map.length = kernel_x_start - start;
 				map.type = MT_MEMORY_RW;
-
+                pprintk("start < kernel_x_start\n");
 				create_mapping(&map);
 			}
 
@@ -1372,7 +1378,7 @@ static void __init map_lowmem(void)
 			map.virtual = __phys_to_virt(kernel_x_start);
 			map.length = kernel_x_end - kernel_x_start;
 			map.type = MT_MEMORY_RWX;
-
+            pprintk("kernel_x_start --> kernel_x_end\n");
 			create_mapping(&map);
 
 			if (kernel_x_end < end) {
@@ -1380,7 +1386,7 @@ static void __init map_lowmem(void)
 				map.virtual = __phys_to_virt(kernel_x_end);
 				map.length = end - kernel_x_end;
 				map.type = MT_MEMORY_RW;
-
+                pprintk("kernel_x_end-->end\n");
 				create_mapping(&map);
 			}
 		}
@@ -1516,18 +1522,18 @@ void __init paging_init(const struct machine_desc *mdesc)
 {
 	void *zero_page;
 
-	build_mem_type_table();
-	prepare_page_table();
-	map_lowmem();
+	build_mem_type_table();/*创建mem_types数组*/
+	prepare_page_table();/*清空一段一段的页表，做初始化*/
+	map_lowmem();/*建立页表映射*/
 	dma_contiguous_remap();
-	devicemaps_init(mdesc);
-	kmap_init();
+	devicemaps_init(mdesc);/*映射其他的内存空间，如vectors等等*/
+	kmap_init();/*初始化高端映射*/
 	tcm_init();
 
 	top_pmd = pmd_off_k(0xffff0000);
 
 	/* allocate the zero page. */
-	zero_page = early_alloc(PAGE_SIZE);
+	zero_page = early_alloc(PAGE_SIZE);/*初始化全为零的页面，比如在分配匿名页面的时候大有用处*/
 
 	bootmem_init();
 

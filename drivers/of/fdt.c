@@ -893,7 +893,7 @@ int __init early_init_dt_scan_memory(unsigned long node, const char *uname,
 		pr_debug(" - %llx ,  %llx\n", (unsigned long long)base,
 		    (unsigned long long)size);
 
-		early_init_dt_add_memory_arch(base, size);
+		early_init_dt_add_memory_arch(base, size);/*内存加入memblock*/
 	}
 
 	return 0;
@@ -977,7 +977,7 @@ void __init __weak early_init_dt_add_memory_arch(u64 base, u64 size)
 		size -= phys_offset - base;
 		base = phys_offset;
 	}
-	memblock_add(base, size);
+	memblock_add(base, size);/*将从dts里面找到的大块内存，加入到memblock子系统*/
 }
 
 int __init __weak early_init_dt_reserve_memory_arch(phys_addr_t base,
@@ -1032,7 +1032,7 @@ void __init early_init_dt_scan_nodes(void)
 	of_scan_flat_dt(early_init_dt_scan_root, NULL);
 
 	/* Setup memory, calling early_init_dt_add_memory_arch */
-	of_scan_flat_dt(early_init_dt_scan_memory, NULL);
+	of_scan_flat_dt(early_init_dt_scan_memory, NULL);/*去dts中寻找memory相关的信息,如base和size等等*/
 }
 
 bool __init early_init_dt_scan(void *params)

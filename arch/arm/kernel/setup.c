@@ -897,7 +897,7 @@ void __init setup_arch(char **cmdline_p)
 	const struct machine_desc *mdesc;
 
 	setup_processor();
-	mdesc = setup_machine_fdt(__atags_pointer);
+	mdesc = setup_machine_fdt(__atags_pointer);/*fdt flat device tree*/
 	if (!mdesc)
 		mdesc = setup_machine_tags(__atags_pointer, __machine_arch_type);
 	machine_desc = mdesc;
