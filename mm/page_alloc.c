@@ -3379,7 +3379,7 @@ static int build_zonelists_node(pg_data_t *pgdat, struct zonelist *zonelist,
 				int nr_zones)
 {
 	struct zone *zone;
-	enum zone_type zone_type = MAX_NR_ZONES;
+	enum zone_type zone_type = MAX_NR_ZONES;/*3 分别，0：normal 1:highmem 2:movable*/
 
 	do {
 		zone_type--;
@@ -3768,7 +3768,7 @@ static void build_zonelists(pg_data_t *pgdat)
 	local_node = pgdat->node_id;
 
 	zonelist = &pgdat->node_zonelists[0];
-	j = build_zonelists_node(pgdat, zonelist, 0);
+	j = build_zonelists_node(pgdat, zonelist, 0);/*遍历该内存节点所有的zone，将所有的zone挂到该内存节点的node_zonelists上去*/
 
 	/*
 	 * Now we build the zonelist so that it contains the zones
@@ -3789,7 +3789,7 @@ static void build_zonelists(pg_data_t *pgdat)
 		j = build_zonelists_node(NODE_DATA(node), zonelist, j);
 	}
 
-	zonelist->_zonerefs[j].zone = NULL;
+	zonelist->_zonerefs[j].zone = NULL;//标记zonelist zone的结束
 	zonelist->_zonerefs[j].zone_idx = 0;
 }
 
@@ -3843,7 +3843,7 @@ static int __build_all_zonelists(void *data)
 	}
 
 	for_each_online_node(nid) {
-		pg_data_t *pgdat = NODE_DATA(nid);
+		pg_data_t *pgdat = NODE_DATA(nid);/*找到gplist_data数据结构*/
 
 		build_zonelists(pgdat);
 		build_zonelist_cache(pgdat);
@@ -3863,7 +3863,7 @@ static int __build_all_zonelists(void *data)
 	 * (a chicken-egg dilemma).
 	 */
 	for_each_possible_cpu(cpu) {
-		setup_pageset(&per_cpu(boot_pageset, cpu), 0);
+		setup_pageset(&per_cpu(boot_pageset, cpu), 0);/*遍历每颗cpu，初始化其pageset*/
 
 #ifdef CONFIG_HAVE_MEMORYLESS_NODES
 		/*
@@ -3901,7 +3901,7 @@ build_all_zonelists_init(void)
  */
 void __ref build_all_zonelists(pg_data_t *pgdat, struct zone *zone)
 {
-	set_zonelist_order();
+	set_zonelist_order();/*设置zonelist中节点和内存区域的组织形式  1. current_zonelist_order变量标识了当前系统的内存组织形式 */
 
 	if (system_state == SYSTEM_BOOTING) {
 		build_all_zonelists_init();

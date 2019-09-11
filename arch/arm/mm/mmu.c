@@ -848,6 +848,7 @@ static void __init create_mapping(struct map_desc *md)
 	const struct mem_type *type;
 	pgd_t *pgd;
 
+
 	if (md->virtual != vectors_base() && md->virtual < TASK_SIZE) {
 		pr_warn("BUG: not creating mapping for 0x%08llx at 0x%08lx in user region\n",
 			(long long)__pfn_to_phys((u64)md->pfn), md->virtual);
@@ -1184,6 +1185,8 @@ static inline void prepare_page_table(void)
 	for (addr = __phys_to_virt(end);
 	     addr < VMALLOC_START; addr += PMD_SIZE)
 		pmd_clear(pmd_off_k(addr));
+    pprintk("MODULES_VADDR=0x%x, PAGE_OFFSET=0x%x, end=0x%x, VMALLOC_START=0x%x, PMD_SIZE=0x%x\n",
+                    MODULES_VADDR,PAGE_OFFSET,__phys_to_virt(end),VMALLOC_START,PMD_SIZE);
 }
 
 #ifdef CONFIG_ARM_LPAE
@@ -1523,7 +1526,7 @@ void __init paging_init(const struct machine_desc *mdesc)
 	void *zero_page;
 
 	build_mem_type_table();/*创建mem_types数组*/
-	prepare_page_table();/*清空一段一段的页表，做初始化*/
+	prepare_page_table();/*在映射页表之前，需要把页表的页表项清零*/
 	map_lowmem();/*建立页表映射*/
 	dma_contiguous_remap();
 	devicemaps_init(mdesc);/*映射其他的内存空间，如vectors等等*/

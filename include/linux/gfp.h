@@ -254,7 +254,7 @@ static inline enum zone_type gfp_zone(gfp_t flags)
 	int bit = (__force int) (flags & GFP_ZONEMASK);
 
 	z = (GFP_ZONE_TABLE >> (bit * ZONES_SHIFT)) &
-					 ((1 << ZONES_SHIFT) - 1);
+					 ((1 << ZONES_SHIFT) - 1);//GFP_ZONE_TABLE 0x200010
 	VM_BUG_ON((GFP_ZONE_BAD >> bit) & 1);
 	return z;
 }

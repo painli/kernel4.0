@@ -485,6 +485,9 @@ static void __init mm_init(void)
 	pgtable_init();
 	vmalloc_init();
 }
+void pain_debug(void){
+    struct page* debug = alloc_pages(GFP_KERNEL,2);
+}
 
 asmlinkage __visible void __init start_kernel(void)
 {
@@ -524,7 +527,7 @@ asmlinkage __visible void __init start_kernel(void)
 	setup_per_cpu_areas();
 	smp_prepare_boot_cpu();	/* arch-specific boot-cpu hooks */
 
-	build_all_zonelists(NULL, NULL);
+	build_all_zonelists(NULL, NULL);/*为系统中所有的zone建立后备zone列表，后备在pglist_data->node_zonelist[0]*/
 	page_alloc_init();
 
 	pr_notice("Kernel command line: %s\n", boot_command_line);
@@ -667,6 +670,7 @@ asmlinkage __visible void __init start_kernel(void)
 		efi_late_init();
 		efi_free_boot_services();
 	}
+    pain_debug();
 
 	ftrace_init();
 
