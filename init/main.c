@@ -486,7 +486,17 @@ static void __init mm_init(void)
 	vmalloc_init();
 }
 void pain_debug(void){
-    struct page* debug = alloc_pages(GFP_KERNEL,2);
+    //1. alloc_pages debug
+    struct page* debug = alloc_pages(GFP_KERNEL,0);
+    __free_pages(debug,0);
+
+    //2 .slab debug
+    struct kmem_cache *fcache = kmem_cache_create("pain_object",20,8,0,NULL);
+    if(!fcache){
+            kmem_cache_destroy(fcache);
+            return -ENOMEM;
+    }
+    void *buf = kmem_cache_alloc(fcache,GFP_KERNEL);
 }
 
 asmlinkage __visible void __init start_kernel(void)

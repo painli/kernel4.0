@@ -597,7 +597,7 @@ static inline void __free_one_page(struct page *page,
 		__mod_zone_freepage_state(zone, 1 << order, migratetype);
 	}
 
-	page_idx = pfn & ((1 << max_order) - 1);
+	page_idx = pfn & ((1 << max_order) - 1);/*计算page-idx位于pageblock的位子*/
 
 	VM_BUG_ON_PAGE(page_idx & ((1 << order) - 1), page);
 	VM_BUG_ON_PAGE(bad_range(zone, page), page);

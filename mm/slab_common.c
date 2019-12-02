@@ -303,7 +303,7 @@ do_kmem_cache_create(const char *name, size_t object_size, size_t size,
 	int err;
 
 	err = -ENOMEM;
-	s = kmem_cache_zalloc(kmem_cache, GFP_KERNEL);
+	s = kmem_cache_zalloc(kmem_cache, GFP_KERNEL);/*分配kmem_cache数据结构*/
 	if (!s)
 		goto out;
 
@@ -317,12 +317,12 @@ do_kmem_cache_create(const char *name, size_t object_size, size_t size,
 	if (err)
 		goto out_free_cache;
 
-	err = __kmem_cache_create(s, flags);
+	err = __kmem_cache_create(s, flags);/*建立slab缓冲区*/
 	if (err)
 		goto out_free_cache;
 
 	s->refcount = 1;
-	list_add(&s->list, &slab_caches);
+	list_add(&s->list, &slab_caches);/*将slab描述符加入全局链表slab_caches中*/
 out:
 	if (err)
 		return ERR_PTR(err);
