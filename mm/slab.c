@@ -1931,7 +1931,7 @@ static size_t calculate_slab_order(struct kmem_cache *cachep,
 		unsigned int num;
 		size_t remainder;
 
-		cache_estimate(gfporder, size, align, flags, &remainder, &num);
+		cache_estimate(gfporder, size, align, flags, &remainder, &num);//计算页面order的值
 		if (!num)
 			continue;
 
@@ -2123,7 +2123,7 @@ __kmem_cache_create (struct kmem_cache *cachep, unsigned long flags)
 	 * unaligned accesses for some archs when redzoning is used, and makes
 	 * sure any on-slab bufctl's are also correctly aligned.
 	 */
-	if (size & (BYTES_PER_WORD - 1)) {
+	if (size & (BYTES_PER_WORD - 1)) {//检查size是否和系统的word长度对齐BYTE_PER_WORD
 		size += (BYTES_PER_WORD - 1);
 		size &= ~(BYTES_PER_WORD - 1);
 	}
@@ -2137,7 +2137,7 @@ __kmem_cache_create (struct kmem_cache *cachep, unsigned long flags)
 	}
 
 	/* 3) caller mandated alignment */
-	if (ralign < cachep->align) {
+	if (ralign < cachep->align) {//计算align对齐
 		ralign = cachep->align;
 	}
 	/* disable debug if necessary */
@@ -2206,7 +2206,7 @@ __kmem_cache_create (struct kmem_cache *cachep, unsigned long flags)
 	if (FREELIST_BYTE_INDEX && size < SLAB_OBJ_MIN_SIZE)
 		size = ALIGN(SLAB_OBJ_MIN_SIZE, cachep->align);
 
-	left_over = calculate_slab_order(cachep, size, cachep->align, flags);
+	left_over = calculate_slab_order(cachep, size, cachep->align, flags);//计算一个slab中需要多少个物理页面，同时计算一个slab可以容纳多少个obj
 
 	if (!cachep->num)
 		return -E2BIG;
@@ -3593,7 +3593,7 @@ static int alloc_kmem_cache_node(struct kmem_cache *cachep, gfp_t gfp)
 
 		new_shared = NULL;
 		if (cachep->shared) {
-			new_shared = alloc_arraycache(node,
+			new_shared = alloc_arraycache(node,//分配一个共享对象缓冲池，为多核之间共享空闲缓存对象
 				cachep->shared*cachep->batchcount,
 					0xbaadf00d, gfp);
 			if (!new_shared) {
@@ -3626,7 +3626,7 @@ static int alloc_kmem_cache_node(struct kmem_cache *cachep, gfp_t gfp)
 			free_alien_cache(new_alien);
 			continue;
 		}
-		n = kmalloc_node(sizeof(struct kmem_cache_node), gfp, node);
+		n = kmalloc_node(sizeof(struct kmem_cache_node), gfp, node);//分配一个kmem_cache_node节点
 		if (!n) {
 			free_alien_cache(new_alien);
 			kfree(new_shared);
@@ -3669,7 +3669,7 @@ static int __do_tune_cpucache(struct kmem_cache *cachep, int limit,
 	struct array_cache __percpu *cpu_cache, *prev;
 	int cpu;
 
-	cpu_cache = alloc_kmem_cache_cpus(cachep, limit, batchcount);
+	cpu_cache = alloc_kmem_cache_cpus(cachep, limit, batchcount);//分配Per-CPU类型的struct array_cache数据结构-对象缓冲池
 	if (!cpu_cache)
 		return -ENOMEM;
 
@@ -3701,7 +3701,7 @@ static int __do_tune_cpucache(struct kmem_cache *cachep, int limit,
 	free_percpu(prev);
 
 alloc_node:
-	return alloc_kmem_cache_node(cachep, gfp);
+	return alloc_kmem_cache_node(cachep, gfp);//初始化slab缓冲区 kmem_cache_node数据结构
 }
 
 static int do_tune_cpucache(struct kmem_cache *cachep, int limit,

@@ -491,12 +491,12 @@ void pain_debug(void){
     __free_pages(debug,2);
 
     //2. slab debug
-    struct kmem_cache* fcache = kmem_cache_create("pain_object",20,8,0,NULL);
+    struct kmem_cache* fcache = kmem_cache_create("pain_object",20,8,0,NULL);//创建slab描述符 
     if(!fcache){
-            kmem_cache_destroy(fcache);
+            kmem_cache_destroy(fcache);//释放slab描述符
             return -ENOMEM;
     }
-    void *buf = kmem_cache_alloc(fcache,GFP_KERNEL);
+    void *buf = kmem_cache_alloc(fcache,GFP_KERNEL);//分配缓存对象
 }
 
 asmlinkage __visible void __init start_kernel(void)
